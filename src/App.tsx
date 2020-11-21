@@ -6,8 +6,8 @@ import { Square } from "./types/types";
 function App() {
   const [squares, setSquares] = useState<Square[]>([]);
 
-  function handleSquaresChanged(squares: Square[]) {
-    setSquares(squares);
+  function handleSquaresChanged(nextSquares: Square[]) {
+    setSquares(nextSquares);
   }
 
   return (
@@ -16,6 +16,8 @@ function App() {
         squares={squares}
         onSquaresChanged={handleSquaresChanged}
       ></SidebarInputs>
+      <p>Angle: {squares.length > 0 ? squares[0].rotation : undefined } deg</p>
+      
       {/* <pan-zoom-svg></pan-zoom-svg> */}
     </div>
   );
