@@ -15,9 +15,8 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
   const [spinningNumber, setSpinningNumber] = useState(0);
   const [fps, setFps] = useState(30);
   const [measuredFps, setMeasuredFps] = useState(0);
-    
+      
   function handleStartButtonClick() {
-    readInputs();
     createSquares();
     if (intervalId) {
       clearInterval(intervalId);
@@ -37,27 +36,6 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
     }
   }
 
-  function readInputs() {
-    // Get sideLength
-    const sideLengthInput = document.getElementById(
-      "side-length"
-    ) as HTMLInputElement;
-    setSideLength(Number(sideLengthInput.value));
-    // Get numberOfSquares
-    const numberOfSquaresInput = document.getElementById(
-      "num-squares"
-    ) as HTMLInputElement;
-    setSquaresNumber(Number(numberOfSquaresInput.value));
-    // Get numberSpinning
-    const numberSpinningInput = document.getElementById(
-      "num-spinning"
-    ) as HTMLInputElement;
-    setSpinningNumber(Number(numberSpinningInput.value));
-    // Get frames per sec
-    const fpsInput = document.getElementById("req-fps") as HTMLInputElement;
-    setFps(Number(fpsInput.value));
-  }
-
   function distance(factor: number = 1.75) {
     return sideLength * factor;
   }
@@ -73,7 +51,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
       const square: Square = {
         x,
         y,
-        sideLength: sideLength,
+        sideLength,
         rotation: 0,
         isHighligted: false,
         isSelected: false,
@@ -103,7 +81,6 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
       return square;
     });
     onSquaresChanged(squares);
-    console.log(`Number of squares: ${squares.length}`);
   }
 
   return (
@@ -113,7 +90,8 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         type="number"
         id="side-length"
         name="side-length"
-        value={sideLength}
+        defaultValue={sideLength}
+        //value={sideLength}
         onChange={(e) => setSideLength(Number(e.target.value))}
       />
       <label htmlFor="num-squares">Number of squares:</label>
@@ -121,7 +99,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         type="number"
         id="num-squares"
         name="num-squares"
-        value={squaresNumber}
+        defaultValue={squaresNumber}
         onChange={(e) => setSquaresNumber(Number(e.target.value))}
       />
       <label htmlFor="num-spinning">Number spinning:</label>
@@ -129,7 +107,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         type="number"
         id="num-spinning"
         name="num-spinning"
-        value={spinningNumber}
+        defaultValue={spinningNumber}
         onChange={(e) => setSpinningNumber(Number(e.target.value))}
       />
       <label htmlFor="req-fps">Frames per sec:</label>
@@ -137,7 +115,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         type="number"
         id="req-fps"
         name="req-fps"
-        value={fps}
+        defaultValue={fps}
         onChange={(e) => setFps(Number(e.target.value))}
       />
       <div>
