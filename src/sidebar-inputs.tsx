@@ -36,9 +36,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
     }
   }
 
-  function distance(factor: number = 1.75) {
-    return sideLength * factor;
-  }
+  const distance = (factor: number = 1.75) => sideLength * factor;
 
   function createSquares() {
     const squaresPerRow = Math.round(Math.sqrt(squaresNumber));
@@ -49,6 +47,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
       const x = distance() * colum;
       const y = distance() * row;
       const square: Square = {
+        id: n.toString(),
         x,
         y,
         sideLength,
@@ -71,6 +70,7 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
     const diff = t - lastT;
     setMeasuredFps(Math.round(1000 / diff));
     lastT = t;
+    
   }
 
   function spinSquares() {
@@ -84,14 +84,13 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
   }
 
   return (
-    <div id="input-parameters">
+    <div id="sidebar-inputs">
       <label htmlFor="side-length">Side length:</label>
       <input
         type="number"
         id="side-length"
         name="side-length"
         defaultValue={sideLength}
-        //value={sideLength}
         onChange={(e) => setSideLength(Number(e.target.value))}
       />
       <label htmlFor="num-squares">Number of squares:</label>

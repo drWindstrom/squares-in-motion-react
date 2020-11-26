@@ -4,9 +4,19 @@ import { Square } from "./types/types";
 
 type SquareProps = {
   square: Square;
+  onMouseEnter: (e: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
+  onMouseLeave: (e: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
+  onClick: (e: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
+  onMouseDown: (e: React.MouseEvent<SVGRectElement, MouseEvent>) => void;
 };
 
-function SquareSvg({ square }: SquareProps) {
+function SquareSvg({
+  square,
+  onMouseEnter,
+  onMouseLeave,
+  onClick,
+  onMouseDown,
+}: SquareProps) {
   // Default style
   let strokeColor = "black";
   let strokeWidth = "0";
@@ -40,6 +50,10 @@ function SquareSvg({ square }: SquareProps) {
       strokeWidth={strokeWidth}
       cursor={cursorStyle}
       transform={`translate(${center.x} ${center.y}) rotate(${square.rotation})`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
     ></rect>
   );
 }
