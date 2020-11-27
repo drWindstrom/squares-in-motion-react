@@ -1,14 +1,21 @@
-import React, { useEffect, useState, useRef }  from 'react';
+import React, { useEffect, useState, useRef } from "react";
 import { Square } from "./types/types";
-import OriginSvg from './origin-svg';
-import SquareSvg from './square-svg';
+import OriginSvg from "./origin-svg";
+import SquareSvg from "./square-svg";
+import {
+  ActionType,
+  toggleHighlightSquare,
+  toggleSelectSquare,
+  deselectAllSquares,
+  translateSelectedSquares,
+} from "./squares-store";
 
 type PanZoomSvgProps = {
   squares: Square[];
-  onSquaresChanged: (squares: Square[]) => void;
-}
+  dispatch: React.Dispatch<ActionType>;
+};
 
-function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
+function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   //const [viewBoxMinX, setViewBoxMinX] = useState(0);
   //const [viewBoxMinY, setViewBoxMinY] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -17,10 +24,9 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
   const [isSquareDrag, setIsSquareDrag] = useState(false);
   const [finishingDrag, setFinishingDrag] = useState(false);
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
-  console.log("PanZoomUpdate");
-  
+
   const svgEl = useRef<SVGSVGElement>(undefined!);
-    
+
   useEffect(() => {
     // Get viewport size after initial render and update on resize of the window
     function updateSvgViewportSize() {
@@ -29,9 +35,9 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
     }
 
     updateSvgViewportSize();
-    window.addEventListener('resize', updateSvgViewportSize);
+    window.addEventListener("resize", updateSvgViewportSize);
 
-    return () => window.removeEventListener('resize', updateSvgViewportSize);
+    return () => window.removeEventListener("resize", updateSvgViewportSize);
   }, []);
 
   useEffect(() => {
@@ -42,39 +48,30 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
         setFinishingDrag(true);
       }
     }
-    window.addEventListener('mouseup', handleWindowMouseUp);
+    window.addEventListener("mouseup", handleWindowMouseUp);
 
-    return () => window.removeEventListener('mouseup', handleWindowMouseUp);
+    return () => window.removeEventListener("mouseup", handleWindowMouseUp);
   }, [isSquareDrag]);
 
   const VIEW_BOX_OFFSET = 50;
   const viewBoxMinX = -VIEW_BOX_OFFSET;
   const viewBoxMinY = -viewportHeight + VIEW_BOX_OFFSET;
-  
-  const viewboxWidth =  viewportWidth / zoom;
+
+  const viewboxWidth = viewportWidth / zoom;
   const viewboxHeight = viewportHeight / zoom;
 
   function handleSquareMouseEnter(changed: Square) {
-    squares = squares.map((square) => {
-      if (square === changed) {
-        square = { ...square, isHighligted: true };
-      }
-      return square;
-    });
-    onSquaresChanged(squares);
+    dispatch(toggleHighlightSquare(changed));
   }
 
   function handleSquareMouseLeave(changed: Square) {
-    squares = squares.map((square) => {
-      if (square === changed) {
-        square = { ...square, isHighligted: false };
-      }
-      return square;
-    });
-    onSquaresChanged(squares);
+    dispatch(toggleHighlightSquare(changed));
   }
 
-  function handleSquareClick(e: React.MouseEvent<SVGRectElement, MouseEvent>, changed: Square) {
+  function handleSquareClick(
+    e: React.MouseEvent<SVGRectElement, MouseEvent>,
+    changed: Square
+  ) {
     // Prevent the click event after dragging a square
     if (finishingDrag) {
       setFinishingDrag(false);
@@ -83,16 +80,13 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
     }
     // Regular click to select the square
     e.stopPropagation();
-    squares = squares.map((square) => {
-      if (square === changed) {
-        square = { ...square, isSelected: !square.isSelected };
-      }
-      return square;
-    });
-    onSquaresChanged(squares);
+    dispatch(toggleSelectSquare(changed));
   }
 
-  function handleSquareMouseDown(e: React.MouseEvent<SVGRectElement, MouseEvent>, changed: Square) {
+  function handleSquareMouseDown(
+    e: React.MouseEvent<SVGRectElement, MouseEvent>,
+    changed: Square
+  ) {
     const MAIN_BUTTON = 0;
     if (changed.isSelected && e.button === MAIN_BUTTON) {
       e.stopPropagation();
@@ -114,11 +108,7 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
   function handleSvgClick(e: React.MouseEvent<SVGSVGElement, MouseEvent>) {
     const MAIN_BUTTON = 0;
     if (e.button === MAIN_BUTTON) {
-      // Deselect all squares
-      squares = squares.map((square) => {
-        return { ...square, isSelected: false };
-      });
-      onSquaresChanged(squares);
+      dispatch(deselectAllSquares());
     }
   }
 
@@ -135,34 +125,24 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
       const mousePosition = clientToSvgCoordinates(e);
       const deltaX = mousePosition.x - lastMousePosition.x;
       const deltaY = mousePosition.y - lastMousePosition.y;
-      // Move slected squares to the next position
-      squares = squares.map((square) => {
-        if (square.isSelected) {
-          square = {
-            ...square,
-            x: square.x + deltaX,
-            y: square.y - deltaY,
-          };
-        }
-        return square;
-      });
-      onSquaresChanged(squares);
+      // Translate squares
+      dispatch(translateSelectedSquares({x: deltaX, y: deltaY}));
       // Save last mouse position
       setLastMousePosition(mousePosition);
     }
   }
 
-  const squareItems = squares.map((square) =>
-    <SquareSvg 
-      square={square} 
+  const squareItems = squares.map((square) => (
+    <SquareSvg
+      square={square}
       onMouseEnter={() => handleSquareMouseEnter(square)}
       onMouseLeave={() => handleSquareMouseLeave(square)}
       onClick={(e) => handleSquareClick(e, square)}
       onMouseDown={(e) => handleSquareMouseDown(e, square)}
-      key={square.id} 
+      key={square.id}
     ></SquareSvg>
-  );
-  
+  ));
+
   return (
     <svg
       ref={svgEl}
@@ -177,7 +157,7 @@ function PanZoomSvg({squares, onSquaresChanged}: PanZoomSvgProps) {
       <OriginSvg origin={{ x: 0, y: 0 }} size={100} strokeWidth={2}></OriginSvg>
       {squareItems}
     </svg>
-  );  
+  );
 }
 
 export default PanZoomSvg;

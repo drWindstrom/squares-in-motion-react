@@ -1,51 +1,56 @@
 import React, { useState } from "react";
 import { Square } from "./types/types";
+import { ActionType, setSquares, rotateSquares } from "./squares-store";
 
 type SidebarInputsProps = {
-  squares: Square[];
-  onSquaresChanged: (squares: Square[]) => void;
+  dispatch: React.Dispatch<ActionType>;
 };
 
 let lastT = 0;
-let intervalId: NodeJS.Timeout | undefined = undefined
+let intervalId: NodeJS.Timeout | undefined = undefined;
+let fpsList: number[] = [];
 
-function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
+function SidebarInputs({ dispatch }: SidebarInputsProps) {
   const [sideLength, setSideLength] = useState(40);
   const [squaresNumber, setSquaresNumber] = useState(100);
   const [spinningNumber, setSpinningNumber] = useState(0);
-  const [fps, setFps] = useState(30);
-  const [measuredFps, setMeasuredFps] = useState(0);
-      
+  const [requestedFps, setRequestedFps] = useState(30);
+  const [lastFrameFps, setLastFrameFps] = useState(0);
+
   function handleStartButtonClick() {
+    fpsList = [];
     createSquares();
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
+    stopSpinning();
+
     if (spinningNumber > 0) {
       intervalId = setInterval(() => {
         measureFps();
-        spinSquares();
-      }, 1000 / fps);
+        dispatch(rotateSquares(spinningNumber));
+      }, 1000 / requestedFps);
     }
   }
 
-  function handleStopButtonClick() {
+  function stopSpinning() {
     if (intervalId) {
       clearInterval(intervalId);
       intervalId = undefined;
     }
   }
 
-  const distance = (factor: number = 1.75) => sideLength * factor;
+  function handleStopButtonClick() {
+    stopSpinning();
+  }
+
+  const distance = 1.75 * sideLength;
 
   function createSquares() {
     const squaresPerRow = Math.round(Math.sqrt(squaresNumber));
-    squares = [];
+    const nextSquares = [];
     for (let n = 1; n <= squaresNumber; n++) {
       const row = Math.ceil(n / squaresPerRow);
       const colum = n - (row - 1) * squaresPerRow;
-      const x = distance() * colum;
-      const y = distance() * row;
+      const x = distance * colum;
+      const y = distance * row;
       const square: Square = {
         id: n.toString(),
         x,
@@ -55,9 +60,9 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         isHighligted: false,
         isSelected: false,
       };
-      squares.push(square);
+      nextSquares.push(square);
     }
-    onSquaresChanged(squares);
+    dispatch(setSquares(nextSquares));
   }
 
   function measureFps() {
@@ -68,19 +73,28 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
     }
     const t = performance.now();
     const diff = t - lastT;
-    setMeasuredFps(Math.round(1000 / diff));
+    const frameFps = Math.round(1000 / diff);
+    setLastFrameFps(frameFps);
+    fpsList.push(frameFps)
+    // Save current time stamp for next run
     lastT = t;
-    
   }
 
-  function spinSquares() {
-    squares = squares.map((square, n) => {
-      if (n < spinningNumber) {
-        square = { ...square, rotation: square.rotation + 1 };
-      }
-      return square;
-    });
-    onSquaresChanged(squares);
+  function averageFps(subsetSize: number = 0) {
+    
+    if (fpsList.length === 0 || fpsList.length < subsetSize) {
+      return 0;
+    }
+
+    const summer = (acc: number, current: number) => acc + current;
+    if (subsetSize === 0) {
+      const sum = fpsList.reduce(summer);
+      return Math.round(sum / fpsList.length);
+    } else {
+      const lastItems = fpsList.slice(fpsList.length - subsetSize);
+      const sum = lastItems.reduce(summer);
+      return Math.round(sum / lastItems.length); 
+    }
   }
 
   return (
@@ -114,14 +128,16 @@ function SidebarInputs({ squares, onSquaresChanged }: SidebarInputsProps) {
         type="number"
         id="req-fps"
         name="req-fps"
-        defaultValue={fps}
-        onChange={(e) => setFps(Number(e.target.value))}
+        defaultValue={requestedFps}
+        onChange={(e) => setRequestedFps(Number(e.target.value))}
       />
       <div>
         <button onClick={handleStartButtonClick}>Start</button>
         <button onClick={handleStopButtonClick}>Stop</button>
       </div>
-      <p>Measuring: {measuredFps} fps</p>
+      <p>Last frame: {lastFrameFps} fps</p>
+      <p>Last 30 frames: {averageFps(30)} fps</p>
+      <p>All frames: {averageFps()} fps</p>
     </div>
   );
 }

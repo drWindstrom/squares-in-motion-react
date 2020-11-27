@@ -1,28 +1,25 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import "./sidebar-inputs";
 import SidebarInputs from "./sidebar-inputs";
-import { Square } from "./types/types";
 import './pan-zoom-svg';
 import PanZoomSvg from "./pan-zoom-svg";
+import {initialSquares, squaresReducer} from './squares-store';
 
 function App() {
-  const [squares, setSquares] = useState<Square[]>([]);
-
-  function handleSquaresChanged(nextSquares: Square[]) {
-    setSquares(nextSquares);
-  }
-
+  const [squares, dispatch] = useReducer(squaresReducer, initialSquares);
+  
   return (
     <div id='squares-in-motion'>
+      
       <SidebarInputs
-        squares={squares}
-        onSquaresChanged={handleSquaresChanged}
+        dispatch={dispatch}
       ></SidebarInputs>
            
       <PanZoomSvg 
         squares={squares}
-        onSquaresChanged={handleSquaresChanged}
+        dispatch={dispatch}
       ></PanZoomSvg>
+    
     </div>
   );
 }

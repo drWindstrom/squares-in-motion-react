@@ -17,17 +17,25 @@ body {
 }
 
 #sidebar-inputs {
-  width: 140px;
-  margin-left: 10px;
-  margin-right: 10px;
+  width: 160px;
+  padding-left: 10px;
+  
+  background-color:#EEEEEE;
   display: flex;
   flex-direction: column;
+  
 }
 
 label {
-  margin-top: 10px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+input {
+  margin-right: 16px;
 }
 
 button {
-  margin-top: 15px;
+  margin-top: 8px;
+  margin-right: 8px;
 }
