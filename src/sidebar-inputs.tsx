@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { Square } from "./types/types";
-import { ActionType, setSquares, rotateSquares } from "./squares-store";
+import { useDispatch } from 'react-redux';
+import {set, rotate} from './features/square/squareSlice';
 
-type SidebarInputsProps = {
-  dispatch: React.Dispatch<ActionType>;
-};
 
 let lastT = 0;
 let intervalId: NodeJS.Timeout | undefined = undefined;
 let fpsList: number[] = [];
 
-function SidebarInputs({ dispatch }: SidebarInputsProps) {
+function SidebarInputs() {
   const [sideLength, setSideLength] = useState(40);
   const [squaresNumber, setSquaresNumber] = useState(100);
   const [spinningNumber, setSpinningNumber] = useState(0);
   const [requestedFps, setRequestedFps] = useState(30);
   const [lastFrameFps, setLastFrameFps] = useState(0);
+
+  const dispatch = useDispatch();
 
   function handleStartButtonClick() {
     fpsList = [];
@@ -25,7 +25,7 @@ function SidebarInputs({ dispatch }: SidebarInputsProps) {
     if (spinningNumber > 0) {
       intervalId = setInterval(() => {
         measureFps();
-        dispatch(rotateSquares(spinningNumber));
+        dispatch(rotate(spinningNumber));
       }, 1000 / requestedFps);
     }
   }
@@ -46,13 +46,13 @@ function SidebarInputs({ dispatch }: SidebarInputsProps) {
   function createSquares() {
     const squaresPerRow = Math.round(Math.sqrt(squaresNumber));
     const nextSquares = [];
-    for (let n = 1; n <= squaresNumber; n++) {
-      const row = Math.ceil(n / squaresPerRow);
-      const colum = n - (row - 1) * squaresPerRow;
+    for (let id = 0; id < squaresNumber; id++) {
+      const row = Math.ceil(id / squaresPerRow);
+      const colum = id - (row - 1) * squaresPerRow;
       const x = distance * colum;
       const y = distance * row;
       const square: Square = {
-        id: n.toString(),
+        id,
         x,
         y,
         sideLength,
@@ -62,7 +62,7 @@ function SidebarInputs({ dispatch }: SidebarInputsProps) {
       };
       nextSquares.push(square);
     }
-    dispatch(setSquares(nextSquares));
+    dispatch(set(nextSquares));
   }
 
   function measureFps() {

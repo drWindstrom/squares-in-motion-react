@@ -1,23 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Square } from "./types/types";
 import OriginSvg from "./origin-svg";
-import SquareSvg from "./square-svg";
-import {
-  ActionType,
-  toggleHighlightSquare,
-  toggleSelectSquare,
-  deselectAllSquares,
-  translateSelectedSquares,
-} from "./squares-store";
+import SquareSvg from "./features/square/square-svg";
+import { useSelector, useDispatch } from 'react-redux';
+import { selectSquares } from "./features/square/squareSlice";
+import { toggleHighlight, toggleSelect, deselectAll, translateSelected } from './features/square/squareSlice';
 
-type PanZoomSvgProps = {
-  squares: Square[];
-  dispatch: React.Dispatch<ActionType>;
-};
 
-function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
-  //const [viewBoxMinX, setViewBoxMinX] = useState(0);
-  //const [viewBoxMinY, setViewBoxMinY] = useState(0);
+function PanZoomSvg() {
   const [viewportWidth, setViewportWidth] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [zoom, setZoom] = useState(1);
@@ -26,6 +16,9 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 });
 
   const svgEl = useRef<SVGSVGElement>(undefined!);
+
+  const dispatch = useDispatch();
+  const squares = useSelector(selectSquares);
 
   useEffect(() => {
     // Get viewport size after initial render and update on resize of the window
@@ -60,13 +53,7 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   const viewboxWidth = viewportWidth / zoom;
   const viewboxHeight = viewportHeight / zoom;
 
-  function handleSquareMouseEnter(changed: Square) {
-    dispatch(toggleHighlightSquare(changed));
-  }
-
-  function handleSquareMouseLeave(changed: Square) {
-    dispatch(toggleHighlightSquare(changed));
-  }
+  
 
   function handleSquareClick(
     e: React.MouseEvent<SVGRectElement, MouseEvent>,
@@ -80,7 +67,7 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
     }
     // Regular click to select the square
     e.stopPropagation();
-    dispatch(toggleSelectSquare(changed));
+    dispatch(toggleSelect(changed));
   }
 
   function handleSquareMouseDown(
@@ -108,7 +95,7 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   function handleSvgClick(e: React.MouseEvent<SVGSVGElement, MouseEvent>) {
     const MAIN_BUTTON = 0;
     if (e.button === MAIN_BUTTON) {
-      dispatch(deselectAllSquares());
+      dispatch(deselectAll());
     }
   }
 
@@ -126,7 +113,7 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
       const deltaX = mousePosition.x - lastMousePosition.x;
       const deltaY = mousePosition.y - lastMousePosition.y;
       // Translate squares
-      dispatch(translateSelectedSquares({x: deltaX, y: deltaY}));
+      dispatch(translateSelected({deltaX, deltaY}));
       // Save last mouse position
       setLastMousePosition(mousePosition);
     }
@@ -135,8 +122,8 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   const squareItems = squares.map((square) => (
     <SquareSvg
       square={square}
-      onMouseEnter={() => handleSquareMouseEnter(square)}
-      onMouseLeave={() => handleSquareMouseLeave(square)}
+      onMouseEnter={() => dispatch(toggleHighlight(square))}
+      onMouseLeave={() => dispatch(toggleHighlight(square))}
       onClick={(e) => handleSquareClick(e, square)}
       onMouseDown={(e) => handleSquareMouseDown(e, square)}
       key={square.id}

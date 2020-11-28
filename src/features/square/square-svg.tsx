@@ -1,6 +1,6 @@
 import React from "react";
-import { invertYAxis } from "./utils";
-import { Square } from "./types/types";
+import { invertYAxis } from "../../utils";
+import { Square } from "../../types/types";
 
 type SquareProps = {
   square: Square;
