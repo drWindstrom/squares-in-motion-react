@@ -2,7 +2,6 @@
   "name": "squares-in-motion-react",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://drwindstrom.github.io/squares-in-motion-react/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
