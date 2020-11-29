@@ -65,6 +65,15 @@ export const {
   translateSelected,
 } = squareSlice.actions;
 
+export const actions = {
+  set,
+  rotate,
+  toggleHighlight,
+  toggleSelect,
+  deselectAll,
+  translateSelected,
+};
+
 // Export selectors
 export const selectSquares = (state: RootState) => state.square.squares;
 

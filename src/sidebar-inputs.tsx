@@ -46,13 +46,13 @@ function SidebarInputs() {
   function createSquares() {
     const squaresPerRow = Math.round(Math.sqrt(squaresNumber));
     const nextSquares = [];
-    for (let id = 0; id < squaresNumber; id++) {
-      const row = Math.ceil(id / squaresPerRow);
-      const colum = id - (row - 1) * squaresPerRow;
+    for (let n = 1; n <= squaresNumber; n++) {
+      const row = Math.ceil(n / squaresPerRow);
+      const colum = n - (row - 1) * squaresPerRow;
       const x = distance * colum;
       const y = distance * row;
       const square: Square = {
-        id,
+        id: n - 1,
         x,
         y,
         sideLength,
