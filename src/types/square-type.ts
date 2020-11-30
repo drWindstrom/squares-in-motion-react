@@ -1,5 +1,5 @@
 export type Square =  {
-  id: string;
+  id: number;
   x: number;
   y: number;
   sideLength: number;
