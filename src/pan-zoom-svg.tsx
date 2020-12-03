@@ -59,15 +59,13 @@ function PanZoomSvg() {
     </svg>
   );
 
-  function handleClick(e: React.MouseEvent<SVGElement, MouseEvent>) {
+  function handleClick(e: React.MouseEvent) {
     onSvg.deselectAll(e);
   }
   
-  function handleMouseMove(e: React.MouseEvent<SVGElement, MouseEvent>) {
+  function handleMouseMove(e: React.MouseEvent) {
     onSvg.squareDrag(e, svgRef);
   }
 }
-
-
 
 export default PanZoomSvg;

@@ -3,11 +3,11 @@ import { store } from "../../app/store";
 import { Square } from '../../types/types';
 import { actions } from './squareSlice';
 
+
 let isSquareDrag = false;
 let finishingDrag = false;
 let lastMousePosition = { x: 0, y: 0 };
 let lastUpdate = 0;
-
 
 export const onSquare = {
   toggleHighlight,
@@ -24,7 +24,7 @@ function toggleHighlight(changed: Square) {
 }
 
 function toggleSelect(
-  e: React.MouseEvent<SVGRectElement, MouseEvent>,
+  e: React.MouseEvent,
   changed: Square
 ) {
   // Handle onClick on square
@@ -41,7 +41,7 @@ function toggleSelect(
 }
 
 function startDrag(
-  e: React.MouseEvent<SVGRectElement, MouseEvent>,
+  e: React.MouseEvent,
   changed: Square,
   svgRef: React.MutableRefObject<SVGSVGElement>
 ) {
@@ -61,7 +61,7 @@ export const onSvg = {
   squareDrag: drag,
 };
 
-function deselectAll(e: React.MouseEvent<SVGElement, MouseEvent>) {
+function deselectAll(e: React.MouseEvent) {
   // Handle onClick on svg
   const MAIN_BUTTON = 0;
   if (e.button === MAIN_BUTTON) {
@@ -71,7 +71,7 @@ function deselectAll(e: React.MouseEvent<SVGElement, MouseEvent>) {
 }
 
 function drag(
-  e: React.MouseEvent<SVGElement, MouseEvent>,
+  e: React.MouseEvent,
   svgRef: React.MutableRefObject<SVGSVGElement>
 ) {
   // Handle onMouseMove on svg
@@ -113,7 +113,7 @@ function finishDrag() {
 }
 
 function clientToSvgCoordinates(
-  e: React.MouseEvent<SVGElement, MouseEvent>,
+  e: React.MouseEvent,
   svgRef: React.MutableRefObject<SVGSVGElement>
 ) {
   const svgEl = svgRef.current as SVGSVGElement;
