@@ -2,13 +2,13 @@ import React from "react";
 import { Point } from "./types/types";
 import { invertYAxis } from "./utils";
 
-type OriginProps = {
+type Props = {
   origin: Point;
   size: number;
   strokeWidth: number;
 };
 
-function OriginSvg({ origin, size, strokeWidth }: OriginProps) {
+function OriginSvg({ origin, size, strokeWidth }: Props) {
   const markerSize = 3 * strokeWidth;
   let xArrow = { x: origin.x + size, y: origin.y };
   let yArrow = { x: origin.x, y: origin.y + size };
