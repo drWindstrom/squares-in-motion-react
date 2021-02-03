@@ -1,14 +1,13 @@
-import React, { useState } from "react";
-import { Square } from "./types/types";
+import React, { useState } from 'react';
+import { Square } from './types/types';
 import { useDispatch } from 'react-redux';
-import {set, rotate} from './features/square/squareSlice';
-
+import { set, rotate } from './features/square/squareSlice';
 
 let lastT = 0;
 let intervalId: NodeJS.Timeout | undefined = undefined;
 let fpsList: number[] = [];
 
-function SidebarInputs() {
+function Sidebar() {
   const [sideLength, setSideLength] = useState(40);
   const [squaresNumber, setSquaresNumber] = useState(100);
   const [spinningNumber, setSpinningNumber] = useState(0);
@@ -75,13 +74,12 @@ function SidebarInputs() {
     const diff = t - lastT;
     const frameFps = Math.round(1000 / diff);
     setLastFrameFps(frameFps);
-    fpsList.push(frameFps)
+    fpsList.push(frameFps);
     // Save current time stamp for next run
     lastT = t;
   }
 
   function averageFps(subsetSize: number = 0) {
-    
     if (fpsList.length === 0 || fpsList.length < subsetSize) {
       return 0;
     }
@@ -93,7 +91,7 @@ function SidebarInputs() {
     } else {
       const lastItems = fpsList.slice(fpsList.length - subsetSize);
       const sum = lastItems.reduce(summer);
-      return Math.round(sum / lastItems.length); 
+      return Math.round(sum / lastItems.length);
     }
   }
 
@@ -105,7 +103,7 @@ function SidebarInputs() {
         id="side-length"
         name="side-length"
         defaultValue={sideLength}
-        onChange={(e) => setSideLength(Number(e.target.value))}
+        onChange={e => setSideLength(Number(e.target.value))}
       />
       <label htmlFor="num-squares">Number of squares:</label>
       <input
@@ -113,7 +111,7 @@ function SidebarInputs() {
         id="num-squares"
         name="num-squares"
         defaultValue={squaresNumber}
-        onChange={(e) => setSquaresNumber(Number(e.target.value))}
+        onChange={e => setSquaresNumber(Number(e.target.value))}
       />
       <label htmlFor="num-spinning">Number spinning:</label>
       <input
@@ -121,7 +119,7 @@ function SidebarInputs() {
         id="num-spinning"
         name="num-spinning"
         defaultValue={spinningNumber}
-        onChange={(e) => setSpinningNumber(Number(e.target.value))}
+        onChange={e => setSpinningNumber(Number(e.target.value))}
       />
       <label htmlFor="req-fps">Frames per sec:</label>
       <input
@@ -129,7 +127,7 @@ function SidebarInputs() {
         id="req-fps"
         name="req-fps"
         defaultValue={requestedFps}
-        onChange={(e) => setRequestedFps(Number(e.target.value))}
+        onChange={e => setRequestedFps(Number(e.target.value))}
       />
       <div>
         <button onClick={handleStartButtonClick}>Start</button>
@@ -142,4 +140,4 @@ function SidebarInputs() {
   );
 }
 
-export default SidebarInputs;
+export default Sidebar;

@@ -1,19 +1,22 @@
-import React, { useEffect, useState, useRef } from "react";
-import OriginSvg from "./origin-svg";
-import SquareSvg from "./features/square/square-svg";
+import React, { useEffect, useState, useRef } from 'react';
+import OriginSvg from './origin';
+import SquareSvg from './square';
 import { useSelector } from 'react-redux';
-import { selectSquares } from "./features/square/squareSlice";
-import { useSquareWindowHandlers, onSvg  } from './features/square/square-handler';
+import { selectSquares } from './features/square/squareSlice';
+import {
+  useSquareWindowHandlers,
+  onSvg,
+} from './features/square/square-handler';
 
 function PanZoomSvg() {
   const [viewportWidth, setViewportWidth] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [zoom, setZoom] = useState(1);
-  
+
   const svgRef = useRef<SVGSVGElement>(undefined!);
 
   useSquareWindowHandlers();
-  
+
   const squares = useSelector(selectSquares);
 
   useEffect(() => {
@@ -24,23 +27,19 @@ function PanZoomSvg() {
     }
 
     updateSvgViewportSize();
-    window.addEventListener("resize", updateSvgViewportSize);
+    window.addEventListener('resize', updateSvgViewportSize);
 
-    return () => window.removeEventListener("resize", updateSvgViewportSize);
+    return () => window.removeEventListener('resize', updateSvgViewportSize);
   }, []);
-  
+
   const VIEW_BOX_OFFSET = 50;
   const viewBoxMinX = -VIEW_BOX_OFFSET;
   const viewBoxMinY = -viewportHeight + VIEW_BOX_OFFSET;
   const viewboxWidth = viewportWidth / zoom;
   const viewboxHeight = viewportHeight / zoom;
 
-  const squareItems = squares.map((square) => (
-    <SquareSvg
-      square={square}
-      svgRef={svgRef}
-      key={square.id}
-    ></SquareSvg>
+  const squareItems = squares.map(square => (
+    <SquareSvg square={square} svgRef={svgRef} key={square.id}></SquareSvg>
   ));
 
   return (
@@ -62,7 +61,7 @@ function PanZoomSvg() {
   function handleClick(e: React.MouseEvent) {
     onSvg.deselectAll(e);
   }
-  
+
   function handleMouseMove(e: React.MouseEvent) {
     onSvg.squareDrag(e, svgRef);
   }

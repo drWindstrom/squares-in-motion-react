@@ -1,32 +1,31 @@
-import React from "react";
-import { invertYAxis } from "../../utils";
-import { Square } from "../../types/types";
-import { onSquare } from './square-handler';
-
+import React from 'react';
+import { invertYAxis } from './utils';
+import { Square } from './types/types';
+import { onSquare } from './features/square/square-handler';
 
 type SquareProps = {
   square: Square;
   svgRef: React.MutableRefObject<SVGSVGElement>;
 };
 
-function SquareSvg({square, svgRef}: SquareProps) {
+function SquareSvg({ square, svgRef }: SquareProps) {
   // Default style
-  let strokeColor = "black";
-  let strokeWidth = "0";
-  let cursorStyle = "grab";
+  let strokeColor = 'black';
+  let strokeWidth = '0';
+  let cursorStyle = 'grab';
   if (square.isHighligted && !square.isSelected) {
     // Highlighted only
-    strokeColor = "rgb(85,160,185)";
-    strokeWidth = "2";
+    strokeColor = 'rgb(85,160,185)';
+    strokeWidth = '2';
   } else if (square.isSelected && !square.isHighligted) {
     // Selected only
-    strokeColor = "rgb(175,35,95)";
-    strokeWidth = "2";
+    strokeColor = 'rgb(175,35,95)';
+    strokeWidth = '2';
   } else if (square.isSelected && square.isHighligted) {
     // Highlighted and selected
-    strokeColor = "rgb(175,35,95)";
-    strokeWidth = "2";
-    cursorStyle = "move";
+    strokeColor = 'rgb(175,35,95)';
+    strokeWidth = '2';
+    cursorStyle = 'move';
   }
 
   const center = invertYAxis({ x: square.x, y: square.y });
