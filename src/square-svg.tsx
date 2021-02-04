@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Square } from './store';
-import { onSquare } from './features/square/square-handler';
 
-type SquareProps = {
+type SquareSvgProps = {
   square: Square;
   svgRef: React.MutableRefObject<SVGSVGElement>;
 };
 
-function SquareSvg({ square, svgRef }: SquareProps) {
+function SquareSvg({ square, svgRef }: SquareSvgProps) {
   const [isHighlighted, setIsHighlighted] = useState(false);
 
   // Default style
@@ -31,6 +30,14 @@ function SquareSvg({ square, svgRef }: SquareProps) {
 
   const center = { x: square.x, y: -square.y };
 
+  function handlePointerEnter() {
+    setIsHighlighted(true);
+  }
+
+  function handlePointerLeave() {
+    setIsHighlighted(false);
+  }
+
   return (
     <rect
       x={-square.sideLength / 2}
@@ -40,23 +47,13 @@ function SquareSvg({ square, svgRef }: SquareProps) {
       rx={square.sideLength / 10}
       ry={square.sideLength / 10}
       stroke={strokeColor}
-      strokeWidth={strokeWidth}
+      stroke-width={strokeWidth}
       cursor={cursorStyle}
       transform={`translate(${center.x} ${center.y}) rotate(${square.rotation})`}
-      onMouseEnter={() => onSquare.toggleHighlight(square)}
-      onMouseLeave={() => onSquare.toggleHighlight(square)}
-      onClick={toggleSelect}
-      onMouseDown={startDrag}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     ></rect>
   );
-
-  function toggleSelect(e: React.MouseEvent<SVGRectElement, MouseEvent>) {
-    onSquare.toggleSelect(e, square);
-  }
-
-  function startDrag(e: React.MouseEvent<SVGRectElement, MouseEvent>) {
-    onSquare.startDrag(e, square, svgRef);
-  }
 }
 
 export default SquareSvg;

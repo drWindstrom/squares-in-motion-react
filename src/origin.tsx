@@ -1,13 +1,13 @@
 import React from 'react';
 import './origin.css';
 
-type Props = {
+type OriginProps = {
   origin: { x: number; y: number };
   size: number;
   strokeWidth: number;
 };
 
-function OriginSvg({ origin, size, strokeWidth }: Props) {
+function Origin({ origin, size, strokeWidth }: OriginProps) {
   const markerSize = 3 * strokeWidth;
 
   const xArrow = { x: origin.x + size, y: -origin.y };
@@ -57,4 +57,4 @@ function OriginSvg({ origin, size, strokeWidth }: Props) {
   );
 }
 
-export default OriginSvg;
+export default Origin;
