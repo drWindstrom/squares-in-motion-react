@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { invertYAxis } from './utils';
-import { Square } from './types/types';
+import { Square } from './store';
 import { onSquare } from './features/square/square-handler';
 
 type SquareProps = {
@@ -9,19 +9,21 @@ type SquareProps = {
 };
 
 function SquareSvg({ square, svgRef }: SquareProps) {
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
   // Default style
   let strokeColor = 'black';
   let strokeWidth = '0';
   let cursorStyle = 'grab';
-  if (square.isHighligted && !square.isSelected) {
+  if (isHighlighted && !square.isSelected) {
     // Highlighted only
     strokeColor = 'rgb(85,160,185)';
     strokeWidth = '2';
-  } else if (square.isSelected && !square.isHighligted) {
+  } else if (square.isSelected && !isHighlighted) {
     // Selected only
     strokeColor = 'rgb(175,35,95)';
     strokeWidth = '2';
-  } else if (square.isSelected && square.isHighligted) {
+  } else if (square.isSelected && isHighlighted) {
     // Highlighted and selected
     strokeColor = 'rgb(175,35,95)';
     strokeWidth = '2';

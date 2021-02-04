@@ -1,6 +1,6 @@
-import React from "react";
-import { Point } from "./types/types";
-import { invertYAxis } from "./utils";
+import React from 'react';
+import { Point } from './utils';
+import { invertYAxis } from './utils';
 
 type Props = {
   origin: Point;

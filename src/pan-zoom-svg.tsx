@@ -1,23 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import OriginSvg from './origin';
 import SquareSvg from './square';
-import { useSelector } from 'react-redux';
-import { selectSquares } from './features/square/squareSlice';
-import {
-  useSquareWindowHandlers,
-  onSvg,
-} from './features/square/square-handler';
+import { Square, PayloadAction } from './store';
 
-function PanZoomSvg() {
+type PanZoomSvgProps = {
+  squares: Square[];
+  dispatch: React.Dispatch<PayloadAction>;
+};
+
+function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
   const [viewportWidth, setViewportWidth] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [zoom, setZoom] = useState(1);
 
   const svgRef = useRef<SVGSVGElement>(undefined!);
-
-  useSquareWindowHandlers();
-
-  const squares = useSelector(selectSquares);
 
   useEffect(() => {
     // Get viewport size after initial render and update on resize of the window
@@ -39,7 +35,7 @@ function PanZoomSvg() {
   const viewboxHeight = viewportHeight / zoom;
 
   const squareItems = squares.map(square => (
-    <SquareSvg square={square} svgRef={svgRef} key={square.id}></SquareSvg>
+    <SquareSvg square={square} svgRef={svgRef} key={square.id} />
   ));
 
   return (
@@ -50,21 +46,11 @@ function PanZoomSvg() {
       height="100%"
       viewBox={`${viewBoxMinX} ${viewBoxMinY} ${viewboxWidth} ${viewboxHeight}`}
       xmlns="http://www.w3.org/2000/svg"
-      onClick={handleClick}
-      onMouseMove={handleMouseMove}
     >
       <OriginSvg origin={{ x: 0, y: 0 }} size={100} strokeWidth={2}></OriginSvg>
       {squareItems}
     </svg>
   );
-
-  function handleClick(e: React.MouseEvent) {
-    onSvg.deselectAll(e);
-  }
-
-  function handleMouseMove(e: React.MouseEvent) {
-    onSvg.squareDrag(e, svgRef);
-  }
 }
 
 export default PanZoomSvg;

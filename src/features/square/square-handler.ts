@@ -1,8 +1,5 @@
-import React, { useEffect } from "react";
-import { store } from "../../app/store";
-import { Square } from '../../types/types';
-import { actions } from './squareSlice';
-
+import React, { useEffect } from 'react';
+import { Square } from '../../store';
 
 let isSquareDrag = false;
 let finishingDrag = false;
@@ -18,15 +15,12 @@ export const onSquare = {
 function toggleHighlight(changed: Square) {
   // Handle onMouseEnter and onMouseLeave on square
   if (!isSquareDrag) {
-    console.log("Square toggleHighlight");
-    store.dispatch(actions.toggleHighlight(changed));
+    console.log('Square toggleHighlight');
+    // store.dispatch(actions.toggleHighlight(changed));
   }
 }
 
-function toggleSelect(
-  e: React.MouseEvent,
-  changed: Square
-) {
+function toggleSelect(e: React.MouseEvent, changed: Square) {
   // Handle onClick on square
   // Prevent the click event after dragging a square
   // if (finishingDrag) {
@@ -35,9 +29,9 @@ function toggleSelect(
   //   return;
   // }
   // Regular click to select the square
-  console.log("Square toggleSelect");
+  console.log('Square toggleSelect');
   e.stopPropagation();
-  store.dispatch(actions.toggleSelect(changed));
+  // store.dispatch(actions.toggleSelect(changed));
 }
 
 function startDrag(
@@ -48,13 +42,12 @@ function startDrag(
   // Handle onMouseDown on square
   const MAIN_BUTTON = 0;
   if (changed.isSelected && e.button === MAIN_BUTTON) {
-    console.log("Square startDrag");
+    console.log('Square startDrag');
     e.stopPropagation();
     isSquareDrag = true;
     lastMousePosition = clientToSvgCoordinates(e, svgRef);
   }
 }
-
 
 export const onSvg = {
   deselectAll,
@@ -65,8 +58,8 @@ function deselectAll(e: React.MouseEvent) {
   // Handle onClick on svg
   const MAIN_BUTTON = 0;
   if (e.button === MAIN_BUTTON) {
-    console.log("Square deselectAll");
-    store.dispatch(actions.deselectAll());
+    console.log('Square deselectAll');
+    // store.dispatch(actions.deselectAll());
   }
 }
 
@@ -78,21 +71,22 @@ function drag(
   e.preventDefault();
   e.stopPropagation();
   // Throttle
-  if(Date.now() - lastUpdate < 1000/60) { return; }
+  if (Date.now() - lastUpdate < 1000 / 60) {
+    return;
+  }
   lastUpdate = Date.now();
   //Dragging a square
   if (isSquareDrag) {
-    console.log("Square drag");
+    console.log('Square drag');
     const mousePosition = clientToSvgCoordinates(e, svgRef);
     const deltaX = mousePosition.x - lastMousePosition.x;
     const deltaY = mousePosition.y - lastMousePosition.y;
     // Translate squares
-    store.dispatch(actions.translateSelected({ deltaX, deltaY }));
+    // store.dispatch(actions.translateSelected({ deltaX, deltaY }));
     // Save last mouse position
     lastMousePosition = mousePosition;
   }
 }
-
 
 export function useSquareWindowHandlers() {
   useEffect(() => {
@@ -106,7 +100,7 @@ export function useSquareWindowHandlers() {
 function finishDrag() {
   // Handle onMouseUp on window
   if (isSquareDrag) {
-    console.log("Square finishDrag");
+    console.log('Square finishDrag');
     isSquareDrag = false;
     finishingDrag = true;
   }

@@ -1,32 +1,29 @@
 import React, { useState } from 'react';
-import { Square } from './types/types';
-import { useDispatch } from 'react-redux';
-import { set, rotate } from './features/square/squareSlice';
+import { PayloadAction } from './store';
 
 let lastT = 0;
 let intervalId: NodeJS.Timeout | undefined = undefined;
 let fpsList: number[] = [];
 
-function Sidebar() {
+type SidebarProps = {
+  dispatch: React.Dispatch<PayloadAction>;
+};
+
+function Sidebar({ dispatch }: SidebarProps) {
   const [sideLength, setSideLength] = useState(40);
-  const [squaresNumber, setSquaresNumber] = useState(100);
-  const [spinningNumber, setSpinningNumber] = useState(0);
+  const [numberOfSquares, setNumberOfSquares] = useState(100);
+  const [numberSpinning, setNumberSpinning] = useState(0);
   const [requestedFps, setRequestedFps] = useState(30);
   const [lastFrameFps, setLastFrameFps] = useState(0);
 
-  const dispatch = useDispatch();
-
-  function handleStartButtonClick() {
-    fpsList = [];
-    createSquares();
-    stopSpinning();
-
-    if (spinningNumber > 0) {
-      intervalId = setInterval(() => {
-        measureFps();
-        dispatch(rotate(spinningNumber));
-      }, 1000 / requestedFps);
-    }
+  function createSquares() {
+    dispatch({
+      type: 'create',
+      payload: {
+        numberOfSquares,
+        sideLength,
+      },
+    });
   }
 
   function stopSpinning() {
@@ -34,34 +31,6 @@ function Sidebar() {
       clearInterval(intervalId);
       intervalId = undefined;
     }
-  }
-
-  function handleStopButtonClick() {
-    stopSpinning();
-  }
-
-  const distance = 1.75 * sideLength;
-
-  function createSquares() {
-    const squaresPerRow = Math.round(Math.sqrt(squaresNumber));
-    const nextSquares = [];
-    for (let n = 1; n <= squaresNumber; n++) {
-      const row = Math.ceil(n / squaresPerRow);
-      const colum = n - (row - 1) * squaresPerRow;
-      const x = distance * colum;
-      const y = distance * row;
-      const square: Square = {
-        id: n - 1,
-        x,
-        y,
-        sideLength,
-        rotation: 0,
-        isHighligted: false,
-        isSelected: false,
-      };
-      nextSquares.push(square);
-    }
-    dispatch(set(nextSquares));
   }
 
   function measureFps() {
@@ -79,17 +48,36 @@ function Sidebar() {
     lastT = t;
   }
 
-  function averageFps(subsetSize: number = 0) {
-    if (fpsList.length === 0 || fpsList.length < subsetSize) {
+  function handleStartButtonClick() {
+    fpsList = [];
+    setLastFrameFps(0);
+
+    createSquares();
+    stopSpinning();
+
+    if (numberSpinning > 0) {
+      intervalId = setInterval(() => {
+        measureFps();
+        dispatch({ type: 'rotate', payload: { numberSpinning } });
+      }, 1000 / requestedFps);
+    }
+  }
+
+  function handleStopButtonClick() {
+    stopSpinning();
+  }
+
+  function average(list: number[], subsetSize = 0) {
+    if (list.length === 0 || list.length < subsetSize) {
       return 0;
     }
 
     const summer = (acc: number, current: number) => acc + current;
     if (subsetSize === 0) {
-      const sum = fpsList.reduce(summer);
-      return Math.round(sum / fpsList.length);
+      const sum = list.reduce(summer);
+      return Math.round(sum / list.length);
     } else {
-      const lastItems = fpsList.slice(fpsList.length - subsetSize);
+      const lastItems = list.slice(list.length - subsetSize);
       const sum = lastItems.reduce(summer);
       return Math.round(sum / lastItems.length);
     }
@@ -110,16 +98,16 @@ function Sidebar() {
         type="number"
         id="num-squares"
         name="num-squares"
-        defaultValue={squaresNumber}
-        onChange={e => setSquaresNumber(Number(e.target.value))}
+        defaultValue={numberOfSquares}
+        onChange={e => setNumberOfSquares(Number(e.target.value))}
       />
       <label htmlFor="num-spinning">Number spinning:</label>
       <input
         type="number"
         id="num-spinning"
         name="num-spinning"
-        defaultValue={spinningNumber}
-        onChange={e => setSpinningNumber(Number(e.target.value))}
+        defaultValue={numberSpinning}
+        onChange={e => setNumberSpinning(Number(e.target.value))}
       />
       <label htmlFor="req-fps">Frames per sec:</label>
       <input
@@ -134,8 +122,8 @@ function Sidebar() {
         <button onClick={handleStopButtonClick}>Stop</button>
       </div>
       <p>Last frame: {lastFrameFps} fps</p>
-      <p>Last 30 frames: {averageFps(30)} fps</p>
-      <p>All frames: {averageFps()} fps</p>
+      <p>Last 30 frames: {average(fpsList, 30)} fps</p>
+      <p>All frames: {average(fpsList)} fps</p>
     </div>
   );
 }

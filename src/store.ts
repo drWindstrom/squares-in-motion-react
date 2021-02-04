@@ -9,17 +9,12 @@ export type Square = {
 
 export const initialState: Square[] = [];
 
-// type PayloadAction<P = void> = {
-//   payload: P;
-//   type: 'create' | 'rotate' | 'select' | 'deselectAll' | 'translate';
-// };
-
-type CreateSquaresPayload = {
+type CreatePayload = {
   numberOfSquares: number;
   sideLength: number;
 };
 
-function createSquares(numberOfSquares: number, sideLength: number) {
+function create({ numberOfSquares, sideLength }: CreatePayload) {
   const squaresPerRow = Math.round(Math.sqrt(numberOfSquares));
   const distance = sideLength * 1.75;
   const newSquares: Square[] = [];
@@ -41,14 +36,11 @@ function createSquares(numberOfSquares: number, sideLength: number) {
   return newSquares;
 }
 
-type RotateSquaresPayload = {
+type RotatePayload = {
   numberSpinning: number;
 };
 
-function rotateSquares(
-  state: Square[],
-  { numberSpinning }: RotateSquaresPayload
-) {
+function rotate(state: Square[], { numberSpinning }: RotatePayload) {
   return state.map((square, n) => {
     if (n < numberSpinning) {
       square = { ...square, rotation: square.rotation + 1 };
@@ -57,11 +49,11 @@ function rotateSquares(
   });
 }
 
-type SelectSquarePayload = {
+type SelectPayload = {
   squareId: string;
 };
 
-function selectSquare(state: Square[], { squareId }: SelectSquarePayload) {
+function select(state: Square[], { squareId }: SelectPayload) {
   return state.map(square => {
     if (square.id === squareId) {
       square = { ...square, isSelected: !square.isSelected };
@@ -70,22 +62,19 @@ function selectSquare(state: Square[], { squareId }: SelectSquarePayload) {
   });
 }
 
-function deselectAllSquares(state: Square[]) {
+function deselectAll(state: Square[]) {
   return state.map(square => {
     square = { ...square, isSelected: false };
     return square;
   });
 }
 
-type TranslateSquaresPayload = {
+type TranslatePayload = {
   deltaX: number;
   deltaY: number;
 };
 
-function translateSquares(
-  state: Square[],
-  { deltaX, deltaY }: TranslateSquaresPayload
-) {
+function translate(state: Square[], { deltaX, deltaY }: TranslatePayload) {
   return state.map(square => {
     if (square.isSelected === true) {
       square = {
@@ -100,44 +89,34 @@ function translateSquares(
 
 type Payload =
   | undefined
-  | CreateSquaresPayload
-  | RotateSquaresPayload
-  | SelectSquarePayload
-  | TranslateSquaresPayload;
+  | CreatePayload
+  | RotatePayload
+  | SelectPayload
+  | TranslatePayload;
 
-type PayloadAction = {
+export type PayloadAction = {
   type: 'create' | 'rotate' | 'select' | 'deselectAll' | 'translate';
   payload: Payload;
 };
 
-function squareReducer(state: Square[], action: PayloadAction) {
+export function squareReducer(state: Square[], action: PayloadAction) {
+  let payload: Payload = undefined;
   switch (action.type) {
     case 'create':
-      const payload = action.payload as CreateSquaresPayload;
-      return createSquares(payload.numberOfSquares, payload.sideLength);
+      payload = action.payload as CreatePayload;
+      return create(payload);
     case 'rotate':
-      return { count: state.count - 1 };
+      payload = action.payload as RotatePayload;
+      return rotate(state, payload);
     case 'select':
-      return { count: state.count - 1 };
+      payload = action.payload as SelectPayload;
+      return select(state, payload);
     case 'deselectAll':
-      return { count: state.count - 1 };
+      return deselectAll(state);
     case 'translate':
-      return { count: state.count - 1 };
+      payload = action.payload as TranslatePayload;
+      return translate(state, payload);
     default:
       throw new Error();
   }
 }
-
-// translateSelected: (
-//   state,
-//   action: PayloadAction<{ deltaX: number; deltaY: number }>
-// ) => {
-//   for (let square of state.squares) {
-//     if (square.isSelected) {
-//       square.x += action.payload.deltaX;
-//       square.y -= action.payload.deltaY;
-//     }
-//   }
-// },
-// },
-// });

@@ -1,4 +1,12 @@
-import { Point, Vector } from "./types/types";
+export type Point = {
+  x: number;
+  y: number;
+};
+
+export type Vector = {
+  x: number;
+  y: number;
+};
 
 export function invertYAxis(p: Point): Point {
   return { x: p.x, y: -p.y };
