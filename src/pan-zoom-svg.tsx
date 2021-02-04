@@ -103,8 +103,29 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
     isPan = false;
   }
 
+  function deselectAll(e: React.PointerEvent) {
+    // Handle onPointerdown
+    const MAIN_BUTTON = 0;
+    if (e.button === MAIN_BUTTON) {
+      dispatch({
+        type: 'deselectAll',
+        payload: undefined,
+      });
+    }
+  }
+
+  function handlePointerDown(e: React.PointerEvent) {
+    startPan(e);
+    deselectAll(e);
+  }
+
   const squareItems = squares.map(square => (
-    <SquareSvg square={square} svgRef={svgRef} key={square.id} />
+    <SquareSvg
+      square={square}
+      dispatch={dispatch}
+      svgRef={svgRef}
+      key={square.id}
+    />
   ));
 
   return (
@@ -116,7 +137,7 @@ function PanZoomSvg({ squares, dispatch }: PanZoomSvgProps) {
       xmlns="http://www.w3.org/2000/svg"
       ref={svgRef}
       onWheel={handleZoom}
-      onPointerDown={startPan}
+      onPointerDown={handlePointerDown}
       onPointerMove={panning}
       onPointerUp={stopPan}
     >
