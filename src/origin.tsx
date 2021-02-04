@@ -1,25 +1,28 @@
 import React from 'react';
-import { Point } from './utils';
-import { invertYAxis } from './utils';
+import './origin.css';
 
 type Props = {
-  origin: Point;
+  origin: { x: number; y: number };
   size: number;
   strokeWidth: number;
 };
 
 function OriginSvg({ origin, size, strokeWidth }: Props) {
   const markerSize = 3 * strokeWidth;
-  let xArrow = { x: origin.x + size, y: origin.y };
-  let yArrow = { x: origin.x, y: origin.y + size };
-  let xLabel = { x: xArrow.x - 4 * markerSize, y: xArrow.y - 3 * markerSize };
-  let yLabel = { x: yArrow.x - 3 * markerSize, y: yArrow.y - 4 * markerSize };
-  // Invert y-axis
-  xArrow = invertYAxis(xArrow);
-  yArrow = invertYAxis(yArrow);
-  xLabel = invertYAxis(xLabel);
-  yLabel = invertYAxis(yLabel);
-  const invOrigin = invertYAxis(origin);
+
+  const xArrow = { x: origin.x + size, y: -origin.y };
+  const yArrow = { x: origin.x, y: -(origin.y + size) };
+
+  const xLabel = {
+    x: xArrow.x - 4 * markerSize,
+    y: xArrow.y + 3 * markerSize,
+  };
+  const yLabel = {
+    x: yArrow.x - 3 * markerSize,
+    y: yArrow.y + 4 * markerSize,
+  };
+
+  const invOrigin = { x: origin.x, y: -origin.y };
 
   return (
     <g>

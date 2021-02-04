@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { invertYAxis } from './utils';
 import { Square } from './store';
 import { onSquare } from './features/square/square-handler';
 
@@ -30,7 +29,7 @@ function SquareSvg({ square, svgRef }: SquareProps) {
     cursorStyle = 'move';
   }
 
-  const center = invertYAxis({ x: square.x, y: square.y });
+  const center = { x: square.x, y: -square.y };
 
   return (
     <rect

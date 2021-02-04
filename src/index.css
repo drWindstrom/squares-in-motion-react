@@ -22,26 +22,3 @@ main {
   display: flex;
   flex-direction: row;
 }
-
-#sidebar-inputs {
-  width: 160px;
-  padding-left: 10px;
-
-  background-color: #eeeeee;
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  margin-top: 12px;
-  margin-bottom: 4px;
-}
-
-input {
-  margin-right: 16px;
-}
-
-button {
-  margin-top: 8px;
-  margin-right: 8px;
-}

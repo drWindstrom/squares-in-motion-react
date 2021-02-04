@@ -1,0 +1,22 @@
+aside {
+  width: 160px;
+  height: 100vh;
+  padding-left: 10px;
+  background-color: #eeeeee;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+input {
+  margin-right: 16px;
+}
+
+button {
+  margin-top: 8px;
+  margin-right: 8px;
+}

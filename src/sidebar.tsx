@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './sidebar.css';
 import { PayloadAction } from './store';
 
 let lastT = 0;
@@ -84,7 +85,7 @@ function Sidebar({ dispatch }: SidebarProps) {
   }
 
   return (
-    <div id="sidebar-inputs">
+    <aside>
       <label htmlFor="side-length">Side length:</label>
       <input
         type="number"
@@ -124,7 +125,7 @@ function Sidebar({ dispatch }: SidebarProps) {
       <p>Last frame: {lastFrameFps} fps</p>
       <p>Last 30 frames: {average(fpsList, 30)} fps</p>
       <p>All frames: {average(fpsList)} fps</p>
-    </div>
+    </aside>
   );
 }
 
